@@ -35,6 +35,7 @@
     <None Include="lit_shader.fs" />
     <None Include="light_source_shader.fs" />
     <None Include="light_source_shader.vs" />
+    <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
