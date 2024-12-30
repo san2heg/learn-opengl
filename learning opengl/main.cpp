@@ -59,6 +59,10 @@ void processInput(GLFWwindow* window) {
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		camera.ProcessKeyboard(UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+		camera.ProcessKeyboard(DOWN, deltaTime);
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
@@ -579,14 +583,15 @@ int main() {
 		// material properties
 		litShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		litShader.setFloat("material.shininess", 32.0f);
-		litShader.setFloat("material.emissionStrength", 0.5f * cos((float)glfwGetTime()*2.0f) + 0.5f);
-		litShader.setFloat("material.emissionOffset", (float)glfwGetTime());
 
 		// light properties
 		litShader.setVec3("light.ambient", glm::vec3(0.2f));
 		litShader.setVec3("light.diffuse", glm::vec3(0.8f));
 		litShader.setVec3("light.specular", glm::vec3(1.0f));
 		litShader.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z);
+		litShader.setFloat("light.constant", 1.0f);
+		litShader.setFloat("light.linear", 0.09f);
+		litShader.setFloat("light.quadratic", 0.032f);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);

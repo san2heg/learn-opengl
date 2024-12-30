@@ -10,7 +10,9 @@ enum Camera_Movement {
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 // Default camera values
@@ -77,6 +79,10 @@ public:
             Position -= Right * velocity;
         if (direction == RIGHT)
             Position += Right * velocity;
+        if (direction == UP)
+            Position += Up * velocity;
+        if (direction == DOWN)
+            Position -= Up * velocity;
         //Position.y = 0.0f; // keeps camera at ground level on xz plane
     }
 
