@@ -1,4 +1,4 @@
 ﻿  main.cpp
 C:\Users\sanketh.hegde\Documents\learning opengl\learning opengl\main.cpp(13,10): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\sanketh.hegde\Documents\learning opengl\learning opengl\main.cpp(539,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\sanketh.hegde\Documents\learning opengl\learning opengl\main.cpp(548,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   learning opengl.vcxproj -> C:\Users\sanketh.hegde\Documents\learning opengl\x64\Debug\learning opengl.exe

@@ -41,7 +41,7 @@ void main()
 
     // diffuse lighting
     vec3 norm = normalize(Normal);
-    vec3 lightPos = vec3(vec3(view * vec4(light.position, 1.0))); // transform light position from world space to view space
+    vec3 lightPos = vec3(view * vec4(light.position, 1.0)); // transform light position from world space to view space
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = (diff * vec3(texture(material.diffuse, TexCoords))) * light.diffuse;

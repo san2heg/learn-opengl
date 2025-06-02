@@ -143,6 +143,7 @@
     <None Include="light_source_shader.vs" />
     <None Include="lit_shader.fs" />
     <None Include="lit_shader.vs" />
+    <None Include="multiple_lit_shader.fs" />
     <None Include="shader.fs" />
     <None Include="shader.vs" />
   </ItemGroup>

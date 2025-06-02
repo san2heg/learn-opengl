@@ -10,7 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-float bf = 0.2;
+float bf = 0.2; // blend factor
 
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f; // time of last frame
@@ -385,7 +385,7 @@ int main() {
 	shader.setInt("texture1", 0);
 	shader.setInt("texture2", 1);
 
-	Shader litShader("./lit_shader.vs", "./lit_shader.fs");
+	Shader litShader("./lit_shader.vs", "./multiple_lit_shader.fs");
 	litShader.use();
 	litShader.setInt("material.diffuse", 0);
 	litShader.setInt("material.specular", 1);
@@ -532,6 +532,15 @@ int main() {
 	// Place a light source within the world
 	glm::vec3 lightPos(1.2f, 1.0f, -2.0f);
 
+	// Multiple lights
+	// ------------------------------------------------------------------
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+
 	// Render loop
 	// ------------------------------------------------------------------
 	while (!glfwWindowShouldClose(window))
@@ -553,45 +562,65 @@ int main() {
 		glm::mat4 projection = glm::mat4(1.0f);
 		projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
 
-		// Draw light source
+		// DRAW LIGHTS
 		lightSourceShader.use();
+		glBindVertexArray(lightVAO);
 
 		glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-		// Rotate the light around the world
-		lightPos.x = 1.0f + sin((float)glfwGetTime()) * 2.0f;
-		lightPos.y = sin((float)glfwGetTime() / 2.0f) * 1.0f;
-		lightPos.z = -1.0f + sin((float)glfwGetTime()) * 2.0f;
+		for (unsigned int i = 0; i < 4; i++) {
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, pointLightPositions[i]);
+			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+			glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
-		glm::mat4 lightModel = glm::mat4(1.0f);
-
-		// An alternate way to rotate the light, using a transformation instead of setting x and y.
-		// Requires this model to be passed to the litShader as well, to transform the original lightPos uniform.
-		//lightModel = glm::rotate(lightModel, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		lightModel = glm::translate(lightModel, lightPos);
-		lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-		glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
-		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-
-		// Draw cubes
+		// DRAW CUBES
 		litShader.use();
 
 		// material properties
-		litShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		litShader.setFloat("material.shininess", 32.0f);
 
 		// light properties
-		litShader.setVec3("light.ambient", glm::vec3(0.2f));
-		litShader.setVec3("light.diffuse", glm::vec3(0.8f));
-		litShader.setVec3("light.specular", glm::vec3(1.0f));
-		litShader.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z);
-		litShader.setFloat("light.constant", 1.0f);
-		litShader.setFloat("light.linear", 0.09f);
-		litShader.setFloat("light.quadratic", 0.032f);
+		// directional light
+		litShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		litShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		litShader.setVec3("dirLight.diffuse", 0.0f, 0.0f, 1.0f);
+		litShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+		// point light 1
+		litShader.setVec3("pointLights[0].position", pointLightPositions[0]);
+		litShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+		litShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+		litShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+		litShader.setFloat("pointLights[0].constant", 1.0f);
+		litShader.setFloat("pointLights[0].linear", 0.09f);
+		litShader.setFloat("pointLights[0].quadratic", 0.032f);
+		// point light 2
+		litShader.setVec3("pointLights[1].position", pointLightPositions[1]);
+		litShader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+		litShader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+		litShader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+		litShader.setFloat("pointLights[1].constant", 1.0f);
+		litShader.setFloat("pointLights[1].linear", 0.09f);
+		litShader.setFloat("pointLights[1].quadratic", 0.032f);
+		// point light 3
+		litShader.setVec3("pointLights[2].position", pointLightPositions[2]);
+		litShader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+		litShader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+		litShader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+		litShader.setFloat("pointLights[2].constant", 1.0f);
+		litShader.setFloat("pointLights[2].linear", 0.09f);
+		litShader.setFloat("pointLights[2].quadratic", 0.032f);
+		// point light 4
+		litShader.setVec3("pointLights[3].position", pointLightPositions[3]);
+		litShader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+		litShader.setVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+		litShader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+		litShader.setFloat("pointLights[3].constant", 1.0f);
+		litShader.setFloat("pointLights[3].linear", 0.09f);
+		litShader.setFloat("pointLights[3].quadratic", 0.032f);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
