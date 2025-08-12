@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "camera.h"
 #include "stb_image.h"
+#include "Model.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -50,7 +51,6 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 }
 
 void processInput(GLFWwindow* window) {
-	const float cameraSpeed = 2.5f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -541,6 +541,11 @@ int main() {
 		glm::vec3(0.0f,  0.0f, -3.0f)
 	};
 
+	// Loading models with Assimp
+	// ------------------------------------------------------------------
+	Model model("backpack.obj");
+
+
 	// Render loop
 	// ------------------------------------------------------------------
 	while (!glfwWindowShouldClose(window))
@@ -645,6 +650,9 @@ int main() {
 		}
 
 		glBindVertexArray(0);
+
+		// Draw custom model
+		model.Draw(litShader);
 
 		// Check and call events and swap the buffers
 		glfwSwapBuffers(window);
