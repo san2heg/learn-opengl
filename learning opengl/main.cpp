@@ -393,6 +393,10 @@ int main() {
 
 	Shader lightSourceShader("./light_source_shader.vs", "./light_source_shader.fs");
 
+	// Create simple shader that only displays a texture
+	// ------------------------------------------------------------------
+	Shader simpleShader("./lit_shader.vs", "./simple_shader.fs");
+
 	// Texture 1
 	// ------------------------------------------------------------------
 
@@ -543,7 +547,7 @@ int main() {
 
 	// Loading models with Assimp
 	// ------------------------------------------------------------------
-	Model model("backpack.obj");
+	Model model("./backpack.obj");
 
 
 	// Render loop
@@ -650,9 +654,14 @@ int main() {
 		}
 
 		glBindVertexArray(0);
-
+		
 		// Draw custom model
-		model.Draw(litShader);
+		simpleShader.use();
+		glm::mat4 m = glm::mat4(1.0f);
+		glUniformMatrix4fv(glGetUniformLocation(simpleShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(simpleShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(simpleShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(m));
+		model.Draw(simpleShader);
 
 		// Check and call events and swap the buffers
 		glfwSwapBuffers(window);

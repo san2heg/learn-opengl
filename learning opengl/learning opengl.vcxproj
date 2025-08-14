@@ -148,6 +148,7 @@
     <None Include="multiple_lit_shader.fs" />
     <None Include="shader.fs" />
     <None Include="shader.vs" />
+    <None Include="simple_shader.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />

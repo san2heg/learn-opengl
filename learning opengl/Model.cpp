@@ -1,6 +1,6 @@
 #include "Model.h"
 
-unsigned int TextureFromFile(const char* path, const string& directory, bool gamma)
+unsigned int TextureFromFile(const char* path, const string& directory)
 {
 	string filename = string(path);
 	filename = directory + '/' + filename;
@@ -33,11 +33,10 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
 	}
 	else
 	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
+		std::cout << "Texture failed to load at path: " << path << ", directory: " << directory << std::endl;
 		stbi_image_free(data);
 	}
 
-	std::cout << "Texture success: " << path << std::endl;
 	return textureID;
 }
 
@@ -142,26 +141,29 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
 {
 	vector<Texture> textures;
-	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	{
 		aiString str;
 		mat->GetTexture(type, i, &str);
 		bool skip = false;
-		for (unsigned int j = 0; j < textures_loaded.size(); j++) {
-			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0) {
+		for (unsigned int j = 0; j < textures_loaded.size(); j++)
+		{
+			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+			{
 				textures.push_back(textures_loaded[j]);
 				skip = true;
 				break;
 			}
 		}
-
-		if (!skip) {
+		if (!skip)
+		{   // if texture hasn't been loaded already, load it
 			Texture texture;
-			texture.id = TextureFromFile(str.C_Str(), directory, false);
+			texture.id = TextureFromFile(str.C_Str(), directory);
 			texture.type = typeName;
 			texture.path = str.C_Str();
 			textures.push_back(texture);
+			textures_loaded.push_back(texture); // add to loaded textures
 		}
 	}
-
-	return vector<Texture>();
+	return textures;
 }

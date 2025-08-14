@@ -43,6 +43,7 @@
     <None Include="light_source_shader.vs" />
     <None Include=".gitignore" />
     <None Include="multiple_lit_shader.fs" />
+    <None Include="simple_shader.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
